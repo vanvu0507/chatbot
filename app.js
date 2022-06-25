@@ -11,7 +11,8 @@ const flash = require('connect-flash')
 const session = require('express-session');
 const mongoose = require('mongoose')
 const users = require('./routes/users');
-const chatbot = require('./routes/chatbot')
+const chatbot = require('./routes/chatbot');
+const User = require('./model/user');
 
 
 
@@ -31,13 +32,58 @@ mongoose.connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true })
     console.log(error)
 });
 
-//Tạo socket 
-io.on('connection', function (socket) {
-    console.log('Welcome to server chat');
+var socketUser = []
 
-    socket.on('send', function (data) {
-        io.sockets.emit('send', data);
-    });
+//Tạo socket 
+io.on('connection', async (socket) => {
+
+    socket.on('login',async (data) => {
+        const user = await User.findById(data.userid)
+        user.socketId = socket.id
+        user.save()
+        console.log('user ' + socket.id + ' has just joined');
+        const skUser = socketUser.filter(item => item.email == user.email)
+        if(skUser.length == 0){
+            socketUser.push(user)
+            io.emit('online', {socketUser})
+        } 
+        else {
+            io.emit('online', {socketUser})
+        }
+        console.log(socketUser)
+        // const users = await User.find()
+        // const onlineUser = users.filter(item => item.socketId )
+        // console.log(onlineUser)
+        // io.emit('online',{ onlineUser })
+    })
+    
+    
+
+    socket.on('disconnect', async (data) => {
+        const user = await User.findOneAndUpdate({socketId: socket.id}, {socketId: null}, {new: true})
+        for(let i = 0; i < socketUser.length; i++){
+            if(socketUser[i].email == user.email){
+                socketUser.splice(i,1)
+                io.emit('online', {socketUser})
+            }
+        }
+        console.log('user ' + socket.id + ' has just left');
+    })
+
+    socket.on('send-message', async (data) => {
+        const user = await User.findById(data.receiverId)
+        io.to([user.socketId,socket.id]).emit('send', data);
+    })
+
+    socket.on('private-addFriend', async (data) => {
+        const user = await User.findById(data.receiverId)
+        io.to(user.socketId).emit('get-private-addFriend',{
+            senderId : data.senderId,
+            receiverId: data.receiverId,
+            msg: 'hello'
+        })
+    })
+
 });
 
 app.use(session({
@@ -66,6 +112,8 @@ app.use('/',chatbot)
 server.listen(process.env.PORT || 3000, () => {
     console.log('Listening to 3000 port')
 });
+
+exports.socketUser = socketUser
 
 
 

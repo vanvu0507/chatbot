@@ -10,6 +10,19 @@ const userSchema = new Schema({
   lastName: String,
   birthday: Date,
   sex: String,
+  socketId: String,
+  hangout: [
+    {
+      receiver: String,
+      text: String,
+      time: Date
+    }
+  ],
+  friendList: [
+    {
+      foreName: String
+    }
+  ]
 });
 
 const User = new mongoose.model('User',userSchema)

@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const User = require('../model/user');
+const socketUser = require('../app')
 
 router.get("/", isLoggedOut, function(req, res) {
     res.render("login");
@@ -36,8 +37,14 @@ router.post('/login', async(req,res) => {
     if(user) {
         const validPassword = await bcrypt.compare(password,user.password)
         if(validPassword) {
-            req.session.userId = user._id;
-            res.redirect('/index')
+            const checkUser = socketUser.socketUser.filter(item => item.email == user.email)
+            if(checkUser.length == 0) {
+                req.session.userId = user._id;
+                res.redirect('/index')
+            } else {
+                req.flash('error', 'tài khoản này đang đăng nhập trên thiết bị khác')
+                res.redirect('/')
+            }
         } else {
             req.flash('error','Sai tên đăng nhập hoặc mật khẩu')
             res.redirect('/')
