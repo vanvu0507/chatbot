@@ -18,9 +18,9 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css" integrity="sha256-3sPp8BkKUE7QyPSl6VfBByBroQbKxKG7tsusY2mhbVY=" crossorigin="anonymous" />
 <div class="container">
 	<div class="row no-gutters">
-	  <div class="col-md-4 border-right">
+	  <div class="col-md-4 border-right" style="height: 600px;">
 		<div class="settings-tray">
-                <img class="profile-image" src="https://www.clarity-enhanced.net/wp-content/uploads/2020/06/filip.jpg" alt="Profile img">
+          <img class="profile-image" src="https://www.clarity-enhanced.net/wp-content/uploads/2020/06/filip.jpg" alt="Profile img">
 		  <span class="settings-tray--right">
 			<i class="fa-solid fa-arrows-spin"></i>
             <i class="fa-solid fa-message"></i>
@@ -41,16 +41,19 @@
 			  </div>
 		</div>
 		<div id="onlineFriend"></div>
-		<hr>
+		
 		
 	  </div>
-	  <div class="col-md-8">
+	  <div class="col-md-8" id="chatFrame">
 		<div class="settings-tray">
 			<div class="friend-drawer no-gutters friend-drawer--grey">
 			<img class="profile-image" src="https://www.clarity-enhanced.net/wp-content/uploads/2020/06/robocop.jpg" alt="">
 			<div class="text">
-			  <h6>Robo Cop</h6>
-			  <p class="text-muted">Layin' down the law since like before Christ...</p>
+			  <h6 id="username"></h6>
+			  <div class="d-flex justify-content-start align-items-center">
+			  <p id="statusDot" style='font-size:20px'>&#8226;</p>
+			  <p id="statusText"></p>
+			  </div>
 			</div>
 			<span class="settings-tray--right">
               <i class="fa-solid fa-arrows-spin"></i>
@@ -60,12 +63,8 @@
 		  </div>
 		</div>
 		<div class="chat-panel">
-		  <div class="row no-gutters friend">
-			<div class="col-md-3">
-			  <div class="chat-bubble chat-bubble--left">
-			  </div>
-			</div>
-		  </div>
+		 
+			<div class="chatFrame" style="height: 460px;overflow-y: scroll;"></div>
 		  
 		  <div class="row textInput">
 			<div class="col-12">
@@ -81,45 +80,5 @@
 	  </div>
 	</div>
   </div>
-
-<script type="text/javascript">
-
-var receiverId
-
-$('#searchFriend').hide()
-
-$(".friend-drawer--onhover").on("click", function () {
-  $(".chat-bubble").hide("slow").show("slow");
-});
-
-$('.btnLogout').click(() => {
-    const text = confirm('Bạn có muốn đăng xuất ?')
-    if(text == true){
-        $.post('/logout', () => {
-            location.reload();
-        })
-    } else {
-        alert('you click cancel')
-    }
-})
-
-$('#search').on('input', () => {
-    $.get(`/search/${$('#search').val()}`, (data) => {
-		var foreName = data.foreName
-		receiverId = data.userid
-		$('#userName').text(`${foreName}`)			
-        $('#searchFriend').show()
-		$('#sendMessage').val(receiverId)
-	})
-})
-
-// $('.addFriend').click(() => {
-// 		$.post('/addfriend',{
-// 			senderId: $('.addFriend').val(),
-// 			friendId: friendId
-// 		})
-// 	})
-
-</script>
 </body>
 </html>

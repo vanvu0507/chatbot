@@ -13,9 +13,8 @@ const userSchema = new Schema({
   socketId: String,
   hangout: [
     {
-      receiver: String,
-      text: String,
-      time: Date
+      type: Schema.Types.ObjectId,
+      ref: 'Conversation'
     }
   ],
   friendList: [

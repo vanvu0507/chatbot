@@ -1,4 +1,5 @@
 const express = require('express')
+const Conversation = require('../model/conversation')
 const User = require('../model/user')
 const route = express.Router()
 
@@ -26,14 +27,20 @@ route.get('/search/:email', async (req, res) => {
     }
 })
 
-// gửi tin nhắn
-route.post('/message', async(req,res) => {
-    const email = req.body.email
-    const hangout = req.body.hangout
-    const user = await User.findOne({email: email})
-    user.hangout.push(hangout)
-    user.save()
-    console.log(req.body)
+// tạo room chat
+route.post('/room', async(req,res) => {
+    const members = await Conversation.findOne({members: {$all: req.body.members}})
+    if(!members) {
+        const conversation = new Conversation({
+            members: req.body.members
+        })
+        await conversation.save()
+        console.log(conversation);
+    } else {
+        console.log('đã tạo room !')
+        console.log(members)
+    }
+    res.json({members})
 })
 
 //Gửi lời mời kết bạn

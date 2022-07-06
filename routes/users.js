@@ -37,7 +37,7 @@ router.post('/login', async(req,res) => {
     if(user) {
         const validPassword = await bcrypt.compare(password,user.password)
         if(validPassword) {
-            const checkUser = socketUser.socketUser.filter(item => item.email == user.email)
+            const checkUser = socketUser.socketUser.filter(item => item.socketId != null && item.email == user.email)
             if(checkUser.length == 0) {
                 req.session.userId = user._id;
                 res.redirect('/index')

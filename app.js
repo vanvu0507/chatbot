@@ -13,7 +13,7 @@ const mongoose = require('mongoose')
 const users = require('./routes/users');
 const chatbot = require('./routes/chatbot');
 const User = require('./model/user');
-
+const Conversation = require('./model/conversation')
 
 
 app.use(express.urlencoded({ extended: true }));
@@ -48,22 +48,23 @@ io.on('connection', async (socket) => {
             io.emit('online', {socketUser})
         } 
         else {
+            if(skUser[0].socketId == null){
+                for(let i = 0; i < socketUser.length; i++){
+                    if(socketUser[i].socketId == null && socketUser[i].email == user.email){
+                        socketUser[i].socketId = user.socketId
+                    }
+                }
+            }
             io.emit('online', {socketUser})
         }
         console.log(socketUser)
-        // const users = await User.find()
-        // const onlineUser = users.filter(item => item.socketId )
-        // console.log(onlineUser)
-        // io.emit('online',{ onlineUser })
     })
-    
-    
 
     socket.on('disconnect', async (data) => {
         const user = await User.findOneAndUpdate({socketId: socket.id}, {socketId: null}, {new: true})
         for(let i = 0; i < socketUser.length; i++){
             if(socketUser[i].email == user.email){
-                socketUser.splice(i,1)
+                socketUser[i].socketId = null
                 io.emit('online', {socketUser})
             }
         }
@@ -72,6 +73,10 @@ io.on('connection', async (socket) => {
 
     socket.on('send-message', async (data) => {
         const user = await User.findById(data.receiverId)
+        const room = await Conversation.findOne({members: {$all: [data.receiverId,data.senderId]}})
+        room.conversation.push(data)
+        await room.save()
+        console.log(room)
         io.to([user.socketId,socket.id]).emit('send', data);
     })
 
