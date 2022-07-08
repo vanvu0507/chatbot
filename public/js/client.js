@@ -2,6 +2,8 @@
 $(function () {
   var receiverId
   var skUser = []
+  $('.chat-panel').hide()
+  $('.settings-tray').hide()
   //Kết nối tới server socket đang lắng nghe
   var socket = io()
   socket.emit('login',{userid: $('.addFriend').val()})
@@ -12,17 +14,20 @@ $(function () {
       if(data.senderId == $('#sendMessage').val()){
         $(".chatFrame").append("<div class='row no-gutters'>" +
         "<div class='col-md-3 left'>" +
-          "<div class='chat-bubble chat-bubble--left'>" +data.text + "</div>" + 
+          "<div class='chat-bubble chat-bubble--left d-flex'>" +data.text + "</div>" +
+          "<div class='text-muted' style='margin-left:30px;font-size:12px;'>"+ data.createAt + "</div>" + 
           "</div>" + 
           "</div>" )
       } if(data.senderId != $('#sendMessage').val() && data.senderId == $('.addFriend').val() ) {
         $(".chatFrame").append("<div class='row no-gutters'>" +
         "<div class='col-md-3 offset-md-9 right'>" +
-          "<div class='chat-bubble chat-bubble--right'>" +data.text + "</div>" + 
+          "<div class='chat-bubble chat-bubble--right d-flex'>" +data.text + "</div>" +
+          "<div class='text-muted' style='margin-left:30px;font-size:12px;'>"+ data.createAt + "</div>" +  
           "</div>" + 
           "</div>" )
       }
-       
+      // $('.chatFrame').slideToggle();
+      $('.chatFrame').animate({scrollTop: $('.chatFrame')[0].scrollHeight}, 'slow');
   })
 
   //socket nhận thông báo kết bạn private
@@ -73,18 +78,23 @@ $(function () {
         if(conversation[i].senderId == $('.addFriend').val()){
           $('.chatFrame').prepend("<div class='row no-gutters'>" +
           "<div class='col-md-3 offset-md-9 right'>" +
-            "<div class='chat-bubble chat-bubble--right'>" +conversation[i].text + "</div>" + 
+            "<div class='chat-bubble chat-bubble--right d-flex'>" +conversation[i].text + "</div>" + 
+            "<div class='text-muted' style='margin-left:30px;font-size:12px;'>"+ conversation[i].createAt + "</div>" + 
             "</div>" + 
             "</div>")
         } if(conversation[i].senderId == $('#sendMessage').val()){
           $('.chatFrame').prepend("<div class='row no-gutters'>" +
           "<div class='col-md-3 left'>" +
-            "<div class='chat-bubble chat-bubble--left'>" +conversation[i].text + "</div>" + 
+            "<div class='chat-bubble chat-bubble--left d-flex'>" +conversation[i].text + "</div>" + 
+            "<div class='text-muted' style='margin-left:30px;font-size:12px;'>"+ conversation[i].createAt + "</div>" + 
             "</div>" + 
             "</div>")
         }
-
       }
+      $('#weather').hide()
+      $('.settings-tray').show()
+      $('.chat-panel').show()
+      $('.chatFrame').animate({scrollTop: $('.chatFrame')[0].scrollHeight}, 'slow');
      })
     }) 
     )
@@ -96,7 +106,7 @@ $(function () {
       receiverId = $('#sendMessage').val()
       var senderId = $('.addFriend').val()
       var text = $('#message').val();
-      var createAt = new Date()
+      var createAt = new Date().toString().slice(0,24)
           //Gửi dữ liệu cho socket
           socket.emit('send-message', {receiverId, senderId, text, createAt});
           $('#message').val('');

@@ -9,7 +9,7 @@ const conversationSchema = new Schema({
      receiverId: String,
      senderId: String,
      text: String,
-     createAt: Date   
+     createAt: String  
     }
   ]
 });

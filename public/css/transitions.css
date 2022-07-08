@@ -1,0 +1,37 @@
+.cloud1{
+    position: absolute;
+    animation-name: cloudMove1;
+    animation-duration: 30s;
+    animation-iteration-count: infinite;
+}
+.cloud2{
+    position: absolute;
+    animation-name: cloudMove2;
+    animation-duration: 30s;
+    animation-iteration-count: infinite;
+}
+.cloud3{
+    position: absolute;
+    animation-name: cloudMove3;
+    animation-duration: 50s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes cloudMove1 {
+    0%   {left:0px;}
+    50% {left: 300px;}
+    100% {left: 0px;}
+  }
+
+@keyframes cloudMove2 {
+    0%   {left:0px;}
+    50% {left: 150px;}
+    100% {left: 0px;}
+  }
+
+@keyframes cloudMove3 {
+    0%   {left:0px;}
+    20% {left: 150px;}
+    70% {left: 600px;}
+    100% {left: 0px;}
+  }
