@@ -11,6 +11,7 @@ const userSchema = new Schema({
   birthday: Date,
   sex: String,
   socketId: String,
+  peerId: String,
   hangout: [
     {
       type: Schema.Types.ObjectId,

@@ -15,7 +15,7 @@ const chatbot = require('./routes/chatbot');
 const User = require('./model/user');
 const Conversation = require('./model/conversation')
 
-
+app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')))
 app.set("view engine", "ejs");
@@ -38,8 +38,9 @@ var socketUser = []
 io.on('connection', async (socket) => {
 
     socket.on('login',async (data) => {
-        const user = await User.findById(data.userid)
+        const user = await User.findById(data.userid).populate('hangout')
         user.socketId = socket.id
+        user.peerId = data.peerId
         user.save()
         console.log('user ' + socket.id + ' has just joined');
         const skUser = socketUser.filter(item => item.email == user.email)
@@ -73,12 +74,27 @@ io.on('connection', async (socket) => {
 
     socket.on('send-message', async (data) => {
         const user = await User.findById(data.receiverId)
-        const room = await Conversation.findOne({members: {$all: [data.receiverId,data.senderId]}})
-        room.conversation.push(data)
-        await room.save()
-        console.log(room)
-        io.to([user.socketId,socket.id]).emit('send', data);
+        // const cvst= await Conversation.findOne({
+        //     members: {
+        //         $all: [data.receiverId, data.senderId]
+        //     }
+        // })
+        // const index = cvst.conversation.length
+        // var daTa = await cvst.conversation[index-1]
+        // console.log(daTa)
+        io.to([user.socketId,socket.id]).emit('send', data );
     })
+
+    socket.on('texting', async (data) => {
+        const user = await User.findById(data.receiverId)
+        io.to(user.socketId).emit('texting',{status: 'đang nhập tin nhắn...', senderId: data.senderId})
+    })
+
+    socket.on('notTexting', async (data) => {
+        const user = await User.findById(data.receiverId)
+        io.to(user.socketId).emit('notTexting')
+    })
+
 
     socket.on('private-addFriend', async (data) => {
         const user = await User.findById(data.receiverId)

@@ -9,6 +9,8 @@ const conversationSchema = new Schema({
      receiverId: String,
      senderId: String,
      text: String,
+     attach: String,
+     fileName: String,
      createAt: String  
     }
   ]

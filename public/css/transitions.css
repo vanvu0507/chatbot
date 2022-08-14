@@ -35,3 +35,13 @@
     70% {left: 600px;}
     100% {left: 0px;}
   }
+
+  .guestVideo {
+    height: 100%;
+    width: 100%;
+  }
+
+  .ownVideo {
+    height: 100%;
+    width: 100%;
+  }
