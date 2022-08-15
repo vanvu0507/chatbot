@@ -129,9 +129,9 @@ app.use((req,res,next) => {
 app.use("/",users)
 app.use('/',chatbot)
 
-
-server.listen(process.env.PORT || 3000, () => {
-    console.log('Listening to 3000 port')
+const port = process.env.PORT || 3000
+server.listen(port, () => {
+    console.log(`Listening to ${port} port`)
 });
 
 exports.socketUser = socketUser
