@@ -14,6 +14,8 @@ const users = require('./routes/users');
 const chatbot = require('./routes/chatbot');
 const User = require('./model/user');
 const Conversation = require('./model/conversation')
+const MongoDBStore = require("connect-mongo");
+
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
@@ -108,6 +110,10 @@ io.on('connection', async (socket) => {
 });
 
 app.use(session({
+    store: MongoDBStore.create({
+        mongoUrl: dbUrl,
+        secret,
+        touchAfter: 24 * 60 * 60}),
     secret,
     resave: false,
     saveUninitialized: true,
